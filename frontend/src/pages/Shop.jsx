@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { CartContext } from '../context/CartContext';
 
 const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
 export default function Shop() {
+  const { addToCart } = useContext(CartContext);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -44,7 +46,13 @@ export default function Shop() {
             className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow"
           >
             <h2 className="text-lg font-semibold text-gray-800 mb-2">{product.name}</h2>
-            <p className="text-cyan-600 font-bold text-xl">{usd.format(product.price)}</p>
+            <p className="text-cyan-600 font-bold text-xl mb-4">{usd.format(product.price)}</p>
+            <button
+              onClick={() => addToCart(product)}
+              className="w-full bg-gray-900 text-white text-sm font-medium py-2 rounded-xl hover:bg-gray-700 transition-colors"
+            >
+              Add to Cart
+            </button>
           </div>
         ))}
       </div>
