@@ -1,0 +1,1234 @@
+{
+  "E:\\2026 PROJECTS\\Summer\\Projects\\Arduino Ecommerce Website\\backend\\serverless.yml": {
+    "versionFramework": "4.38.1",
+    "servicePath": "E:\\2026 PROJECTS\\Summer\\Projects\\Arduino Ecommerce Website\\backend\\serverless.yml",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "service": "arduino-ecommerce-backend",
+      "custom": {
+        "tableName": "arduino-ecommerce-backend-dev-products"
+      },
+      "provider": {
+        "name": "aws",
+        "runtime": "nodejs20.x",
+        "region": "ap-northeast-1",
+        "stage": "dev",
+        "environment": {
+          "STAGE": "dev",
+          "PRODUCTS_TABLE": "arduino-ecommerce-backend-dev-products"
+        },
+        "iam": {
+          "role": {
+            "statements": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "dynamodb:GetItem",
+                  "dynamodb:PutItem",
+                  "dynamodb:UpdateItem",
+                  "dynamodb:DeleteItem",
+                  "dynamodb:Query",
+                  "dynamodb:Scan",
+                  "dynamodb:BatchGetItem",
+                  "dynamodb:BatchWriteItem"
+                ],
+                "Resource": [
+                  {
+                    "Fn::GetAtt": [
+                      "ProductsTable",
+                      "Arn"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "versionFunctions": true,
+        "compiledCloudFormationTemplate": {
+          "AWSTemplateFormatVersion": "2010-09-09",
+          "Description": "The AWS CloudFormation template for this Serverless application",
+          "Resources": {
+            "ApiLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/arduino-ecommerce-backend-dev-api"
+              }
+            },
+            "IamRoleLambdaExecution": {
+              "Type": "AWS::IAM::Role",
+              "Properties": {
+                "AssumeRolePolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Service": [
+                          "lambda.amazonaws.com"
+                        ]
+                      },
+                      "Action": [
+                        "sts:AssumeRole"
+                      ]
+                    }
+                  ]
+                },
+                "Policies": [
+                  {
+                    "PolicyName": {
+                      "Fn::Join": [
+                        "-",
+                        [
+                          "arduino-ecommerce-backend",
+                          "dev",
+                          "lambda"
+                        ]
+                      ]
+                    },
+                    "PolicyDocument": {
+                      "Version": "2012-10-17",
+                      "Statement": [
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:CreateLogStream",
+                            "logs:CreateLogGroup",
+                            "logs:TagResource"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/arduino-ecommerce-backend-dev*:*"
+                            }
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:PutLogEvents"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/arduino-ecommerce-backend-dev*:*:*"
+                            }
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "dynamodb:GetItem",
+                            "dynamodb:PutItem",
+                            "dynamodb:UpdateItem",
+                            "dynamodb:DeleteItem",
+                            "dynamodb:Query",
+                            "dynamodb:Scan",
+                            "dynamodb:BatchGetItem",
+                            "dynamodb:BatchWriteItem"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::GetAtt": [
+                                "ProductsTable",
+                                "Arn"
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "Path": "/",
+                "RoleName": {
+                  "Fn::Join": [
+                    "-",
+                    [
+                      "arduino-ecommerce-backend",
+                      "dev",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "lambdaRole"
+                    ]
+                  ]
+                }
+              }
+            },
+            "ApiLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-ap-northeast-1-b148e94f-d5e5",
+                  "S3Key": "serverless/arduino-ecommerce-backend/dev/1782351679681-2026-06-25T01:41:19.681Z/arduino-ecommerce-backend.zip"
+                },
+                "Handler": "server.handler",
+                "Runtime": "nodejs20.x",
+                "FunctionName": "arduino-ecommerce-backend-dev-api",
+                "MemorySize": 1024,
+                "Timeout": 6,
+                "Environment": {
+                  "Variables": {
+                    "STAGE": "dev",
+                    "PRODUCTS_TABLE": "arduino-ecommerce-backend-dev-products"
+                  }
+                },
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                }
+              },
+              "DependsOn": [
+                "ApiLogGroup"
+              ]
+            },
+            "ApiLambdaVersionwZLclcTApt6fE5iM18X9oHWArKMHkN6AtlopKxByRU": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "ApiLambdaFunction"
+                },
+                "CodeSha256": "A88VCAyk0MSWzGiWFPjPmD4iZVyxtPejObfTkzDpTUs="
+              }
+            },
+            "HttpApi": {
+              "Type": "AWS::ApiGatewayV2::Api",
+              "Properties": {
+                "Name": "dev-arduino-ecommerce-backend",
+                "ProtocolType": "HTTP"
+              }
+            },
+            "HttpApiStage": {
+              "Type": "AWS::ApiGatewayV2::Stage",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "StageName": "$default",
+                "AutoDeploy": true,
+                "DefaultRouteSettings": {
+                  "DetailedMetricsEnabled": false
+                }
+              }
+            },
+            "ApiLambdaPermissionHttpApi": {
+              "Type": "AWS::Lambda::Permission",
+              "Properties": {
+                "FunctionName": {
+                  "Fn::GetAtt": [
+                    "ApiLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":execute-api:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":",
+                      {
+                        "Ref": "HttpApi"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              }
+            },
+            "HttpApiIntegrationApi": {
+              "Type": "AWS::ApiGatewayV2::Integration",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "IntegrationType": "AWS_PROXY",
+                "IntegrationUri": {
+                  "Fn::GetAtt": [
+                    "ApiLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "PayloadFormatVersion": "2.0",
+                "TimeoutInMillis": 30000
+              }
+            },
+            "HttpApiRouteAny": {
+              "Type": "AWS::ApiGatewayV2::Route",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "RouteKey": "ANY /",
+                "Target": {
+                  "Fn::Join": [
+                    "/",
+                    [
+                      "integrations",
+                      {
+                        "Ref": "HttpApiIntegrationApi"
+                      }
+                    ]
+                  ]
+                }
+              },
+              "DependsOn": "HttpApiIntegrationApi"
+            },
+            "HttpApiRouteAnyProxyVar": {
+              "Type": "AWS::ApiGatewayV2::Route",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "RouteKey": "ANY /{proxy+}",
+                "Target": {
+                  "Fn::Join": [
+                    "/",
+                    [
+                      "integrations",
+                      {
+                        "Ref": "HttpApiIntegrationApi"
+                      }
+                    ]
+                  ]
+                }
+              },
+              "DependsOn": "HttpApiIntegrationApi"
+            },
+            "ProductsTable": {
+              "Type": "AWS::DynamoDB::Table",
+              "Properties": {
+                "TableName": "arduino-ecommerce-backend-dev-products",
+                "BillingMode": "PAY_PER_REQUEST",
+                "AttributeDefinitions": [
+                  {
+                    "AttributeName": "PK",
+                    "AttributeType": "S"
+                  },
+                  {
+                    "AttributeName": "SK",
+                    "AttributeType": "S"
+                  }
+                ],
+                "KeySchema": [
+                  {
+                    "AttributeName": "PK",
+                    "KeyType": "HASH"
+                  },
+                  {
+                    "AttributeName": "SK",
+                    "KeyType": "RANGE"
+                  }
+                ]
+              }
+            }
+          },
+          "Outputs": {
+            "ServerlessDeploymentBucketName": {
+              "Value": "serverless-framework-deployments-ap-northeast-1-b148e94f-d5e5",
+              "Export": {
+                "Name": "sls-arduino-ecommerce-backend-dev-ServerlessDeploymentBucketName"
+              }
+            },
+            "ApiLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "ApiLambdaVersionwZLclcTApt6fE5iM18X9oHWArKMHkN6AtlopKxByRU"
+              },
+              "Export": {
+                "Name": "sls-arduino-ecommerce-backend-dev-ApiLambdaFunctionQualifiedArn"
+              }
+            },
+            "HttpApiId": {
+              "Description": "Id of the HTTP API",
+              "Value": {
+                "Ref": "HttpApi"
+              },
+              "Export": {
+                "Name": "sls-arduino-ecommerce-backend-dev-HttpApiId"
+              }
+            },
+            "HttpApiUrl": {
+              "Description": "URL of the HTTP API",
+              "Value": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "https://",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    ".execute-api.",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ".",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    }
+                  ]
+                ]
+              },
+              "Export": {
+                "Name": "sls-arduino-ecommerce-backend-dev-HttpApiUrl"
+              }
+            }
+          }
+        },
+        "vpc": {}
+      },
+      "functions": {
+        "api": {
+          "handler": "server.handler",
+          "events": [
+            {
+              "httpApi": {
+                "path": "/",
+                "method": "ANY"
+              },
+              "resolvedMethod": "ANY",
+              "resolvedPath": "/"
+            },
+            {
+              "httpApi": {
+                "path": "/{proxy+}",
+                "method": "ANY"
+              },
+              "resolvedMethod": "ANY",
+              "resolvedPath": "/{proxy+}"
+            }
+          ],
+          "name": "arduino-ecommerce-backend-dev-api",
+          "package": {},
+          "memory": 1024,
+          "timeout": 6,
+          "runtime": "nodejs20.x",
+          "vpc": {},
+          "versionLogicalId": "ApiLambdaVersionwZLclcTApt6fE5iM18X9oHWArKMHkN6AtlopKxByRU"
+        }
+      },
+      "resources": {
+        "Resources": {
+          "ProductsTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "TableName": "arduino-ecommerce-backend-dev-products",
+              "BillingMode": "PAY_PER_REQUEST",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "PK",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "SK",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "PK",
+                  "KeyType": "HASH"
+                },
+                {
+                  "AttributeName": "SK",
+                  "KeyType": "RANGE"
+                }
+              ]
+            }
+          }
+        },
+        "Outputs": {}
+      }
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "nodejs20.x",
+      "region": "ap-northeast-1",
+      "stage": "dev",
+      "environment": {
+        "STAGE": "dev",
+        "PRODUCTS_TABLE": "arduino-ecommerce-backend-dev-products"
+      },
+      "iam": {
+        "role": {
+          "statements": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:BatchGetItem",
+                "dynamodb:BatchWriteItem"
+              ],
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ProductsTable",
+                    "Arn"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "versionFunctions": true,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ApiLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/arduino-ecommerce-backend-dev-api"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "arduino-ecommerce-backend",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:TagResource"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/arduino-ecommerce-backend-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/arduino-ecommerce-backend-dev*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "dynamodb:GetItem",
+                          "dynamodb:PutItem",
+                          "dynamodb:UpdateItem",
+                          "dynamodb:DeleteItem",
+                          "dynamodb:Query",
+                          "dynamodb:Scan",
+                          "dynamodb:BatchGetItem",
+                          "dynamodb:BatchWriteItem"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::GetAtt": [
+                              "ProductsTable",
+                              "Arn"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "arduino-ecommerce-backend",
+                    "dev",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "ApiLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-ap-northeast-1-b148e94f-d5e5",
+                "S3Key": "serverless/arduino-ecommerce-backend/dev/1782351679681-2026-06-25T01:41:19.681Z/arduino-ecommerce-backend.zip"
+              },
+              "Handler": "server.handler",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "arduino-ecommerce-backend-dev-api",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "STAGE": "dev",
+                  "PRODUCTS_TABLE": "arduino-ecommerce-backend-dev-products"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "ApiLogGroup"
+            ]
+          },
+          "ApiLambdaVersionwZLclcTApt6fE5iM18X9oHWArKMHkN6AtlopKxByRU": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "ApiLambdaFunction"
+              },
+              "CodeSha256": "A88VCAyk0MSWzGiWFPjPmD4iZVyxtPejObfTkzDpTUs="
+            }
+          },
+          "HttpApi": {
+            "Type": "AWS::ApiGatewayV2::Api",
+            "Properties": {
+              "Name": "dev-arduino-ecommerce-backend",
+              "ProtocolType": "HTTP"
+            }
+          },
+          "HttpApiStage": {
+            "Type": "AWS::ApiGatewayV2::Stage",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "StageName": "$default",
+              "AutoDeploy": true,
+              "DefaultRouteSettings": {
+                "DetailedMetricsEnabled": false
+              }
+            }
+          },
+          "ApiLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "ApiLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationApi": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "Fn::GetAtt": [
+                  "ApiLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRouteAny": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "ANY /",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationApi"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationApi"
+          },
+          "HttpApiRouteAnyProxyVar": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "ANY /{proxy+}",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationApi"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationApi"
+          },
+          "ProductsTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "TableName": "arduino-ecommerce-backend-dev-products",
+              "BillingMode": "PAY_PER_REQUEST",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "PK",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "SK",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "PK",
+                  "KeyType": "HASH"
+                },
+                {
+                  "AttributeName": "SK",
+                  "KeyType": "RANGE"
+                }
+              ]
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": "serverless-framework-deployments-ap-northeast-1-b148e94f-d5e5",
+            "Export": {
+              "Name": "sls-arduino-ecommerce-backend-dev-ServerlessDeploymentBucketName"
+            }
+          },
+          "ApiLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "ApiLambdaVersionwZLclcTApt6fE5iM18X9oHWArKMHkN6AtlopKxByRU"
+            },
+            "Export": {
+              "Name": "sls-arduino-ecommerce-backend-dev-ApiLambdaFunctionQualifiedArn"
+            }
+          },
+          "HttpApiId": {
+            "Description": "Id of the HTTP API",
+            "Value": {
+              "Ref": "HttpApi"
+            },
+            "Export": {
+              "Name": "sls-arduino-ecommerce-backend-dev-HttpApiId"
+            }
+          },
+          "HttpApiUrl": {
+            "Description": "URL of the HTTP API",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Ref": "HttpApi"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  }
+                ]
+              ]
+            },
+            "Export": {
+              "Name": "sls-arduino-ecommerce-backend-dev-HttpApiUrl"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "dashboard": {
+      "isEnabledForService": false,
+      "requiredAuthentication": true,
+      "orgFeaturesInUse": null,
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": null,
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "serviceRawFile": "service: arduino-ecommerce-backend\n\ncustom:\n  tableName: ${self:service}-${self:provider.stage}-products\n\nprovider:\n  name: aws\n  runtime: nodejs20.x\n  region: ap-northeast-1\n  stage: ${opt:stage, 'dev'}\n  environment:\n    STAGE: ${opt:stage, 'dev'}\n    PRODUCTS_TABLE: ${self:custom.tableName}\n  iam:\n    role:\n      statements:\n        - Effect: Allow\n          Action:\n            - dynamodb:GetItem\n            - dynamodb:PutItem\n            - dynamodb:UpdateItem\n            - dynamodb:DeleteItem\n            - dynamodb:Query\n            - dynamodb:Scan\n            - dynamodb:BatchGetItem\n            - dynamodb:BatchWriteItem\n          Resource:\n            - !GetAtt ProductsTable.Arn\n\nfunctions:\n  api:\n    handler: server.handler\n    events:\n      - httpApi:\n          path: /\n          method: ANY\n      - httpApi:\n          path: /{proxy+}\n          method: ANY\n\nresources:\n  Resources:\n    ProductsTable:\n      Type: AWS::DynamoDB::Table\n      Properties:\n        TableName: ${self:custom.tableName}\n        BillingMode: PAY_PER_REQUEST\n        AttributeDefinitions:\n          - AttributeName: PK\n            AttributeType: S\n          - AttributeName: SK\n            AttributeType: S\n        KeySchema:\n          - AttributeName: PK\n            KeyType: HASH\n          - AttributeName: SK\n            KeyType: RANGE\n",
+    "command": [
+      "deploy"
+    ],
+    "options": {},
+    "orgId": "8bc814ac-6883-4239-9e18-54616cfd7b29",
+    "orgName": "pauljison",
+    "userId": "6ndB0VYzN47kg4HWBM",
+    "userName": "pauljison",
+    "serviceProviderAwsAccountId": "876931187828",
+    "serviceProviderAwsCfStackName": "arduino-ecommerce-backend-dev",
+    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:ap-northeast-1:876931187828:stack/arduino-ecommerce-backend-dev/e2a07ef0-7036-11f1-85b3-0e55833bb12f",
+    "serviceProviderAwsCfStackCreated": "2026-06-25T01:40:46.480Z",
+    "serviceProviderAwsCfStackUpdated": null,
+    "serviceProviderAwsCfStackStatus": "CREATE_COMPLETE",
+    "serviceProviderAwsCfStackOutputs": [
+      {
+        "OutputKey": "ApiLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:ap-northeast-1:876931187828:function:arduino-ecommerce-backend-dev-api:1",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-arduino-ecommerce-backend-dev-ApiLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "HttpApiId",
+        "OutputValue": "67qrjezsx2",
+        "Description": "Id of the HTTP API",
+        "ExportName": "sls-arduino-ecommerce-backend-dev-HttpApiId"
+      },
+      {
+        "OutputKey": "ServerlessDeploymentBucketName",
+        "OutputValue": "serverless-framework-deployments-ap-northeast-1-b148e94f-d5e5",
+        "ExportName": "sls-arduino-ecommerce-backend-dev-ServerlessDeploymentBucketName"
+      },
+      {
+        "OutputKey": "HttpApiUrl",
+        "OutputValue": "https://67qrjezsx2.execute-api.ap-northeast-1.amazonaws.com",
+        "Description": "URL of the HTTP API",
+        "ExportName": "sls-arduino-ecommerce-backend-dev-HttpApiUrl"
+      }
+    ],
+    "compiledCloudFormationTemplate": {
+      "AWSTemplateFormatVersion": "2010-09-09",
+      "Description": "The AWS CloudFormation template for this Serverless application",
+      "Resources": {
+        "ApiLogGroup": {
+          "Type": "AWS::Logs::LogGroup",
+          "Properties": {
+            "LogGroupName": "/aws/lambda/arduino-ecommerce-backend-dev-api"
+          }
+        },
+        "IamRoleLambdaExecution": {
+          "Type": "AWS::IAM::Role",
+          "Properties": {
+            "AssumeRolePolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": [
+                      "lambda.amazonaws.com"
+                    ]
+                  },
+                  "Action": [
+                    "sts:AssumeRole"
+                  ]
+                }
+              ]
+            },
+            "Policies": [
+              {
+                "PolicyName": {
+                  "Fn::Join": [
+                    "-",
+                    [
+                      "arduino-ecommerce-backend",
+                      "dev",
+                      "lambda"
+                    ]
+                  ]
+                },
+                "PolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "logs:CreateLogStream",
+                        "logs:CreateLogGroup",
+                        "logs:TagResource"
+                      ],
+                      "Resource": [
+                        {
+                          "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/arduino-ecommerce-backend-dev*:*"
+                        }
+                      ]
+                    },
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "logs:PutLogEvents"
+                      ],
+                      "Resource": [
+                        {
+                          "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/arduino-ecommerce-backend-dev*:*:*"
+                        }
+                      ]
+                    },
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "dynamodb:GetItem",
+                        "dynamodb:PutItem",
+                        "dynamodb:UpdateItem",
+                        "dynamodb:DeleteItem",
+                        "dynamodb:Query",
+                        "dynamodb:Scan",
+                        "dynamodb:BatchGetItem",
+                        "dynamodb:BatchWriteItem"
+                      ],
+                      "Resource": [
+                        {
+                          "Fn::GetAtt": [
+                            "ProductsTable",
+                            "Arn"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "Path": "/",
+            "RoleName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "arduino-ecommerce-backend",
+                  "dev",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "lambdaRole"
+                ]
+              ]
+            }
+          }
+        },
+        "ApiLambdaFunction": {
+          "Type": "AWS::Lambda::Function",
+          "Properties": {
+            "Code": {
+              "S3Bucket": "serverless-framework-deployments-ap-northeast-1-b148e94f-d5e5",
+              "S3Key": "serverless/arduino-ecommerce-backend/dev/1782351679681-2026-06-25T01:41:19.681Z/arduino-ecommerce-backend.zip"
+            },
+            "Handler": "server.handler",
+            "Runtime": "nodejs20.x",
+            "FunctionName": "arduino-ecommerce-backend-dev-api",
+            "MemorySize": 1024,
+            "Timeout": 6,
+            "Environment": {
+              "Variables": {
+                "STAGE": "dev",
+                "PRODUCTS_TABLE": "arduino-ecommerce-backend-dev-products"
+              }
+            },
+            "Role": {
+              "Fn::GetAtt": [
+                "IamRoleLambdaExecution",
+                "Arn"
+              ]
+            }
+          },
+          "DependsOn": [
+            "ApiLogGroup"
+          ]
+        },
+        "ApiLambdaVersionwZLclcTApt6fE5iM18X9oHWArKMHkN6AtlopKxByRU": {
+          "Type": "AWS::Lambda::Version",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "FunctionName": {
+              "Ref": "ApiLambdaFunction"
+            },
+            "CodeSha256": "A88VCAyk0MSWzGiWFPjPmD4iZVyxtPejObfTkzDpTUs="
+          }
+        },
+        "HttpApi": {
+          "Type": "AWS::ApiGatewayV2::Api",
+          "Properties": {
+            "Name": "dev-arduino-ecommerce-backend",
+            "ProtocolType": "HTTP"
+          }
+        },
+        "HttpApiStage": {
+          "Type": "AWS::ApiGatewayV2::Stage",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "StageName": "$default",
+            "AutoDeploy": true,
+            "DefaultRouteSettings": {
+              "DetailedMetricsEnabled": false
+            }
+          }
+        },
+        "ApiLambdaPermissionHttpApi": {
+          "Type": "AWS::Lambda::Permission",
+          "Properties": {
+            "FunctionName": {
+              "Fn::GetAtt": [
+                "ApiLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Action": "lambda:InvokeFunction",
+            "Principal": "apigateway.amazonaws.com",
+            "SourceArn": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":execute-api:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":",
+                  {
+                    "Ref": "HttpApi"
+                  },
+                  "/*"
+                ]
+              ]
+            }
+          }
+        },
+        "HttpApiIntegrationApi": {
+          "Type": "AWS::ApiGatewayV2::Integration",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "IntegrationType": "AWS_PROXY",
+            "IntegrationUri": {
+              "Fn::GetAtt": [
+                "ApiLambdaFunction",
+                "Arn"
+              ]
+            },
+            "PayloadFormatVersion": "2.0",
+            "TimeoutInMillis": 30000
+          }
+        },
+        "HttpApiRouteAny": {
+          "Type": "AWS::ApiGatewayV2::Route",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "RouteKey": "ANY /",
+            "Target": {
+              "Fn::Join": [
+                "/",
+                [
+                  "integrations",
+                  {
+                    "Ref": "HttpApiIntegrationApi"
+                  }
+                ]
+              ]
+            }
+          },
+          "DependsOn": "HttpApiIntegrationApi"
+        },
+        "HttpApiRouteAnyProxyVar": {
+          "Type": "AWS::ApiGatewayV2::Route",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "RouteKey": "ANY /{proxy+}",
+            "Target": {
+              "Fn::Join": [
+                "/",
+                [
+                  "integrations",
+                  {
+                    "Ref": "HttpApiIntegrationApi"
+                  }
+                ]
+              ]
+            }
+          },
+          "DependsOn": "HttpApiIntegrationApi"
+        },
+        "ProductsTable": {
+          "Type": "AWS::DynamoDB::Table",
+          "Properties": {
+            "TableName": "arduino-ecommerce-backend-dev-products",
+            "BillingMode": "PAY_PER_REQUEST",
+            "AttributeDefinitions": [
+              {
+                "AttributeName": "PK",
+                "AttributeType": "S"
+              },
+              {
+                "AttributeName": "SK",
+                "AttributeType": "S"
+              }
+            ],
+            "KeySchema": [
+              {
+                "AttributeName": "PK",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "SK",
+                "KeyType": "RANGE"
+              }
+            ]
+          }
+        }
+      },
+      "Outputs": {
+        "ServerlessDeploymentBucketName": {
+          "Value": "serverless-framework-deployments-ap-northeast-1-b148e94f-d5e5",
+          "Export": {
+            "Name": "sls-arduino-ecommerce-backend-dev-ServerlessDeploymentBucketName"
+          }
+        },
+        "ApiLambdaFunctionQualifiedArn": {
+          "Description": "Current Lambda function version",
+          "Value": {
+            "Ref": "ApiLambdaVersionwZLclcTApt6fE5iM18X9oHWArKMHkN6AtlopKxByRU"
+          },
+          "Export": {
+            "Name": "sls-arduino-ecommerce-backend-dev-ApiLambdaFunctionQualifiedArn"
+          }
+        },
+        "HttpApiId": {
+          "Description": "Id of the HTTP API",
+          "Value": {
+            "Ref": "HttpApi"
+          },
+          "Export": {
+            "Name": "sls-arduino-ecommerce-backend-dev-HttpApiId"
+          }
+        },
+        "HttpApiUrl": {
+          "Description": "URL of the HTTP API",
+          "Value": {
+            "Fn::Join": [
+              "",
+              [
+                "https://",
+                {
+                  "Ref": "HttpApi"
+                },
+                ".execute-api.",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ".",
+                {
+                  "Ref": "AWS::URLSuffix"
+                }
+              ]
+            ]
+          },
+          "Export": {
+            "Name": "sls-arduino-ecommerce-backend-dev-HttpApiUrl"
+          }
+        }
+      }
+    }
+  }
+}

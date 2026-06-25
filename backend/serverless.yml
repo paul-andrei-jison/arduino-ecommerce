@@ -1,0 +1,57 @@
+service: arduino-ecommerce-backend
+
+custom:
+  tableName: ${self:service}-${self:provider.stage}-products
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-northeast-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    STAGE: ${opt:stage, 'dev'}
+    PRODUCTS_TABLE: ${self:custom.tableName}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:BatchGetItem
+            - dynamodb:BatchWriteItem
+          Resource:
+            - !GetAtt ProductsTable.Arn
+
+functions:
+  api:
+    handler: server.handler
+    events:
+      - httpApi:
+          path: /
+          method: ANY
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
+
+resources:
+  Resources:
+    ProductsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableName}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
