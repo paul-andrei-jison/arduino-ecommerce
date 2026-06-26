@@ -5,7 +5,7 @@ import { CartContext } from '../context/CartContext';
 const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
 export default function Cart() {
-  const { cartItems, removeFromCart } = useContext(CartContext);
+  const { cartItems, updateQuantity, removeFromCart } = useContext(CartContext);
 
   const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -29,14 +29,29 @@ export default function Cart() {
 
       <ul className="divide-y divide-gray-200 border border-gray-200 rounded-2xl overflow-hidden">
         {cartItems.map((item) => (
-          <li key={item.PK} className="flex items-center justify-between px-5 py-4 bg-white">
-            <div>
+          <li key={item.PK} className="flex items-center justify-between px-5 py-4 bg-white gap-4">
+            <div className="flex-1 min-w-0">
               <p className="font-semibold text-gray-800">{item.name}</p>
-              <p className="text-sm text-gray-500">
-                {usd.format(item.price)} &times; {item.quantity}
-              </p>
+              <p className="text-sm text-gray-500">{usd.format(item.price)} each</p>
             </div>
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => updateQuantity(item.PK, item.quantity - 1)}
+                disabled={item.quantity <= 1}
+                className="w-7 h-7 rounded-lg border border-gray-200 text-gray-700 font-bold flex items-center justify-center hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                −
+              </button>
+              <span className="text-sm font-medium text-gray-800 w-5 text-center">{item.quantity}</span>
+              <button
+                onClick={() => updateQuantity(item.PK, item.quantity + 1)}
+                disabled={item.quantity >= item.stock}
+                className="w-7 h-7 rounded-lg border border-gray-200 text-gray-700 font-bold flex items-center justify-center hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                +
+              </button>
+            </div>
+            <div className="flex items-center gap-4">
               <p className="font-bold text-gray-800">{usd.format(item.price * item.quantity)}</p>
               <button
                 onClick={() => removeFromCart(item.PK)}

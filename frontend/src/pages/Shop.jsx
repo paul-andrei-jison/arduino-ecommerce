@@ -3,6 +3,26 @@ import { CartContext } from '../context/CartContext';
 
 const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
+function ProductCard({ product, addToCart }) {
+  const outOfStock = product.stock === 0;
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+      <h2 className="text-lg font-semibold text-gray-800 mb-2">{product.name}</h2>
+      <p className="text-cyan-600 font-bold text-xl mb-4">{usd.format(product.price)}</p>
+      <div className="mt-auto">
+        <button
+          onClick={() => addToCart(product)}
+          disabled={outOfStock}
+          className="w-full bg-gray-900 text-white text-sm font-medium py-2 rounded-xl hover:bg-gray-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          {outOfStock ? 'Out of Stock' : 'Add to Cart'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function Shop() {
   const { addToCart } = useContext(CartContext);
   const [products, setProducts] = useState([]);
@@ -41,19 +61,7 @@ export default function Shop() {
       <h1 className="text-3xl font-bold text-gray-800 mb-8">Shop</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {products.map((product) => (
-          <div
-            key={product.id}
-            className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow"
-          >
-            <h2 className="text-lg font-semibold text-gray-800 mb-2">{product.name}</h2>
-            <p className="text-cyan-600 font-bold text-xl mb-4">{usd.format(product.price)}</p>
-            <button
-              onClick={() => addToCart(product)}
-              className="w-full bg-gray-900 text-white text-sm font-medium py-2 rounded-xl hover:bg-gray-700 transition-colors"
-            >
-              Add to Cart
-            </button>
-          </div>
+          <ProductCard key={product.PK} product={product} addToCart={addToCart} />
         ))}
       </div>
     </main>

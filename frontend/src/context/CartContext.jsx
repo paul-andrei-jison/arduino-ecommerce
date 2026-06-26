@@ -16,17 +16,29 @@ export function CartProvider({ children }) {
     localStorage.setItem('cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  function addToCart(product) {
-    console.log('[Cart] addToCart:', product);
+  function addToCart(product, quantity = 1) {
+    console.log('[Cart] addToCart:', product, quantity);
     setCartItems((prev) => {
       const existing = prev.find((item) => item.PK === product.PK);
       if (existing) {
         return prev.map((item) =>
-          item.PK === product.PK ? { ...item, quantity: item.quantity + 1 } : item
+          item.PK === product.PK
+            ? { ...item, quantity: Math.min(item.quantity + quantity, product.stock) }
+            : item
         );
       }
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { ...product, quantity: Math.min(quantity, product.stock) }];
     });
+  }
+
+  function updateQuantity(productPK, newQuantity) {
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.PK === productPK
+          ? { ...item, quantity: Math.min(Math.max(1, newQuantity), item.stock) }
+          : item
+      )
+    );
   }
 
   function removeFromCart(productPK) {
@@ -38,7 +50,7 @@ export function CartProvider({ children }) {
   }
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider value={{ cartItems, addToCart, updateQuantity, removeFromCart, clearCart }}>
       {children}
     </CartContext.Provider>
   );
