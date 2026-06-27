@@ -30,7 +30,7 @@ export default function Shop() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('/api/products')
+    fetch(`${import.meta.env.VITE_API_URL ?? ''}/api/products`)
       .then((res) => {
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
         return res.json();

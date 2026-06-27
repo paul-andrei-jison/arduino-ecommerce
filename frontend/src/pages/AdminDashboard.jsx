@@ -15,7 +15,7 @@ export default function AdminDashboard() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    fetch('/api/products')
+    fetch(`${import.meta.env.VITE_API_URL ?? ''}/api/products`)
       .then((res) => {
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
         return res.json();
@@ -34,7 +34,7 @@ export default function AdminDashboard() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await fetch('/api/products', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL ?? ''}/api/products`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -60,7 +60,7 @@ export default function AdminDashboard() {
   async function handleDelete(product) {
     const id = product.PK.replace('PRODUCT#', '');
     try {
-      const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${import.meta.env.VITE_API_URL ?? ''}/api/products/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       setProducts((prev) => prev.filter((p) => p.PK !== product.PK));
     } catch (err) {
