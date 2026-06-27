@@ -1,6 +1,7 @@
 'use strict';
 
-const { ScanCommand } = require('@aws-sdk/lib-dynamodb');
+const { randomUUID } = require('crypto');
+const { ScanCommand, PutCommand, UpdateCommand, DeleteCommand } = require('@aws-sdk/lib-dynamodb');
 const { docClient, TABLE_NAME } = require('../utils/db');
 
 // Scans the entire table and filters to items whose PK begins with "PRODUCT#".
@@ -21,4 +22,62 @@ async function getAllProducts() {
   return result.Items ?? [];
 }
 
-module.exports = { getAllProducts };
+async function createProduct(productData) {
+  const productId = randomUUID();
+  const { description, category, price, stock } = productData;
+
+  const command = new PutCommand({
+    TableName: TABLE_NAME,
+    Item: {
+      PK: `PRODUCT#${productId}`,
+      SK: 'METADATA',
+      description,
+      category,
+      price,
+      stock,
+      createdAt: new Date().toISOString(),
+    },
+  });
+
+  await docClient.send(command);
+  return productId;
+}
+
+async function updateProduct(productId, updateAttributes) {
+  const expressionParts = [];
+  const expressionAttributeNames = {};
+  const expressionAttributeValues = {};
+
+  for (const [key, value] of Object.entries(updateAttributes)) {
+    expressionParts.push(`#${key} = :${key}`);
+    expressionAttributeNames[`#${key}`] = key;
+    expressionAttributeValues[`:${key}`] = value;
+  }
+
+  const command = new UpdateCommand({
+    TableName: TABLE_NAME,
+    Key: {
+      PK: `PRODUCT#${productId}`,
+      SK: 'METADATA',
+    },
+    UpdateExpression: `SET ${expressionParts.join(', ')}`,
+    ExpressionAttributeNames: expressionAttributeNames,
+    ExpressionAttributeValues: expressionAttributeValues,
+  });
+
+  await docClient.send(command);
+}
+
+async function deleteProduct(productId) {
+  const command = new DeleteCommand({
+    TableName: TABLE_NAME,
+    Key: {
+      PK: `PRODUCT#${productId}`,
+      SK: 'METADATA',
+    },
+  });
+
+  await docClient.send(command);
+}
+
+module.exports = { getAllProducts, createProduct, updateProduct, deleteProduct };
