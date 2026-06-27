@@ -24,13 +24,14 @@ async function getAllProducts() {
 
 async function createProduct(productData) {
   const productId = randomUUID();
-  const { description, category, price, stock } = productData;
+  const { name, description, category, price, stock } = productData;
 
   const command = new PutCommand({
     TableName: TABLE_NAME,
     Item: {
       PK: `PRODUCT#${productId}`,
       SK: 'METADATA',
+      name,
       description,
       category,
       price,
