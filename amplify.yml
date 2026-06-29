@@ -6,6 +6,7 @@ applications:
         preBuild:
           commands:
             - npm ci
+            - echo "VITE_API_URL=$VITE_API_URL" > .env.production
         build:
           commands:
             - npm run build
