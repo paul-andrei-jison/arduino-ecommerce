@@ -11,6 +11,7 @@ provider:
   environment:
     STAGE: ${opt:stage, 'dev'}
     PRODUCTS_TABLE: ${self:custom.tableName}
+    ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN, '*'}
   iam:
     role:
       statements:
