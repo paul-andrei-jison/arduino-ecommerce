@@ -18,7 +18,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.use('/api', productRouter);
+app.use('/', productRouter);
 
 // Only listen locally if we are not running in AWS Lambda
 if (process.env.NODE_ENV !== 'production') {
