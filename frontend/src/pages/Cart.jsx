@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
 
@@ -6,6 +6,29 @@ const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' 
 
 export default function Cart() {
   const { cartItems, updateQuantity, removeFromCart } = useContext(CartContext);
+  const [syncNotice, setSyncNotice] = useState(null);
+
+  useEffect(() => {
+    async function validateCartInventory() {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL ?? ''}/api/products`);
+        if (!res.ok) return;
+        const liveProducts = await res.json();
+        const livePKs = new Set(liveProducts.map((p) => p.PK));
+        const ghostItems = cartItems.filter((item) => !livePKs.has(item.PK));
+        if (ghostItems.length > 0) {
+          ghostItems.forEach((item) => removeFromCart(item.PK));
+          const removed = ghostItems.map((item) => item.name).join(', ');
+          setSyncNotice(
+            `The following item${ghostItems.length > 1 ? 's were' : ' was'} removed from your cart because ${ghostItems.length > 1 ? 'they are' : 'it is'} no longer available: ${removed}.`
+          );
+        }
+      } catch {
+        // silently ignore — cart remains unchanged on network failure
+      }
+    }
+    validateCartInventory();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -26,6 +49,18 @@ export default function Cart() {
   return (
     <main className="max-w-2xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold text-gray-800 mb-8">Your Cart</h1>
+
+      {syncNotice && (
+        <div className="mb-6 rounded-xl bg-amber-50 border border-amber-300 text-amber-800 px-4 py-3 text-sm flex items-start justify-between gap-3">
+          <span>{syncNotice}</span>
+          <button
+            onClick={() => setSyncNotice(null)}
+            className="shrink-0 font-bold text-amber-600 hover:text-amber-900 leading-none"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       <ul className="divide-y divide-gray-200 border border-gray-200 rounded-2xl overflow-hidden">
         {cartItems.map((item) => (
