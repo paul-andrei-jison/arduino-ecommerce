@@ -5,6 +5,8 @@ import Home from './pages/Home';
 import Shop from './pages/Shop';
 import Cart from './pages/Cart';
 import ProductDetail from './pages/ProductDetail';
+import AdminDashboard from './pages/AdminDashboard';
+import NotFound from './pages/NotFound';
 
 export default function App() {
   return (
@@ -16,6 +18,8 @@ export default function App() {
           <Route path="/shop" element={<Shop />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </CartProvider>
