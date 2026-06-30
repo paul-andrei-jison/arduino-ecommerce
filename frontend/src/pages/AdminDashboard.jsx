@@ -67,6 +67,22 @@ export default function AdminDashboard() {
     }
   }
 
+  async function handleDelete(productPK) {
+    const cleanId = productPK.replace('PRODUCT#', '');
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL ?? ''}/api/products/${cleanId}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        setProducts(products.filter((p) => p.PK !== productPK));
+      } else {
+        setFetchError(`Delete failed (${res.status})`);
+      }
+    } catch (err) {
+      setFetchError(err.message);
+    }
+  }
+
   const fields = [
     { label: 'Name', name: 'name', type: 'text', placeholder: 'Arduino Uno' },
     { label: 'Description', name: 'description', type: 'text', placeholder: 'Brief description' },
@@ -148,18 +164,27 @@ export default function AdminDashboard() {
                     <th className="pb-2 pr-3 font-medium">Category</th>
                     <th className="pb-2 pr-3 font-medium">Price</th>
                     <th className="pb-2 pr-3 font-medium">Stock</th>
+                    <th className="pb-2 font-medium"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {products.map((p) => (
                     <tr
-                      key={p._id}
+                      key={p.PK}
                       className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors"
                     >
                       <td className="py-2 pr-3 text-gray-100 font-medium">{p.name}</td>
                       <td className="py-2 pr-3 text-gray-400">{p.category}</td>
                       <td className="py-2 pr-3 text-cyan-400">${Number(p.price).toFixed(2)}</td>
                       <td className="py-2 pr-3 text-gray-400">{p.stock}</td>
+                      <td className="py-2">
+                        <button
+                          onClick={() => handleDelete(p.PK)}
+                          className="bg-red-700 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-lg transition-colors"
+                        >
+                          Delete
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
