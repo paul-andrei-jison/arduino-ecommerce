@@ -159,7 +159,7 @@
               "Properties": {
                 "Code": {
                   "S3Bucket": "serverless-framework-deployments-ap-northeast-1-b148e94f-d5e5",
-                  "S3Key": "serverless/arduino-ecommerce-backend/dev/1782351679681-2026-06-25T01:41:19.681Z/arduino-ecommerce-backend.zip"
+                  "S3Key": "serverless/arduino-ecommerce-backend/dev/1782893363591-2026-07-01T08:09:23.591Z/arduino-ecommerce-backend.zip"
                 },
                 "Handler": "server.handler",
                 "Runtime": "nodejs20.x",
@@ -183,14 +183,14 @@
                 "ApiLogGroup"
               ]
             },
-            "ApiLambdaVersionwZLclcTApt6fE5iM18X9oHWArKMHkN6AtlopKxByRU": {
+            "ApiLambdaVersionuiqBh68C7t1ZZSscF6NOJQ9klHwFEDRDqqQjwbiXA": {
               "Type": "AWS::Lambda::Version",
               "DeletionPolicy": "Retain",
               "Properties": {
                 "FunctionName": {
                   "Ref": "ApiLambdaFunction"
                 },
-                "CodeSha256": "A88VCAyk0MSWzGiWFPjPmD4iZVyxtPejObfTkzDpTUs="
+                "CodeSha256": "2hYeTVJUsyHOJZWd+a0OGvoUOiDeUjRbYPzeGPcatn8="
               }
             },
             "HttpApi": {
@@ -347,7 +347,7 @@
             "ApiLambdaFunctionQualifiedArn": {
               "Description": "Current Lambda function version",
               "Value": {
-                "Ref": "ApiLambdaVersionwZLclcTApt6fE5iM18X9oHWArKMHkN6AtlopKxByRU"
+                "Ref": "ApiLambdaVersionuiqBh68C7t1ZZSscF6NOJQ9klHwFEDRDqqQjwbiXA"
               },
               "Export": {
                 "Name": "sls-arduino-ecommerce-backend-dev-ApiLambdaFunctionQualifiedArn"
@@ -418,7 +418,7 @@
           "timeout": 6,
           "runtime": "nodejs20.x",
           "vpc": {},
-          "versionLogicalId": "ApiLambdaVersionwZLclcTApt6fE5iM18X9oHWArKMHkN6AtlopKxByRU"
+          "versionLogicalId": "ApiLambdaVersionuiqBh68C7t1ZZSscF6NOJQ9klHwFEDRDqqQjwbiXA"
         }
       },
       "resources": {
@@ -605,7 +605,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-ap-northeast-1-b148e94f-d5e5",
-                "S3Key": "serverless/arduino-ecommerce-backend/dev/1782351679681-2026-06-25T01:41:19.681Z/arduino-ecommerce-backend.zip"
+                "S3Key": "serverless/arduino-ecommerce-backend/dev/1782893363591-2026-07-01T08:09:23.591Z/arduino-ecommerce-backend.zip"
               },
               "Handler": "server.handler",
               "Runtime": "nodejs20.x",
@@ -629,14 +629,14 @@
               "ApiLogGroup"
             ]
           },
-          "ApiLambdaVersionwZLclcTApt6fE5iM18X9oHWArKMHkN6AtlopKxByRU": {
+          "ApiLambdaVersionuiqBh68C7t1ZZSscF6NOJQ9klHwFEDRDqqQjwbiXA": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ApiLambdaFunction"
               },
-              "CodeSha256": "A88VCAyk0MSWzGiWFPjPmD4iZVyxtPejObfTkzDpTUs="
+              "CodeSha256": "2hYeTVJUsyHOJZWd+a0OGvoUOiDeUjRbYPzeGPcatn8="
             }
           },
           "HttpApi": {
@@ -793,7 +793,7 @@
           "ApiLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ApiLambdaVersionwZLclcTApt6fE5iM18X9oHWArKMHkN6AtlopKxByRU"
+              "Ref": "ApiLambdaVersionuiqBh68C7t1ZZSscF6NOJQ9klHwFEDRDqqQjwbiXA"
             },
             "Export": {
               "Name": "sls-arduino-ecommerce-backend-dev-ApiLambdaFunctionQualifiedArn"
@@ -839,18 +839,20 @@
     },
     "dashboard": {
       "isEnabledForService": false,
-      "requiredAuthentication": true,
+      "requiredAuthentication": false,
       "orgFeaturesInUse": null,
       "orgObservabilityIntegrations": null,
       "serviceAppId": null,
       "serviceProvider": null,
       "instanceParameters": null
     },
-    "serviceRawFile": "service: arduino-ecommerce-backend\n\ncustom:\n  tableName: ${self:service}-${self:provider.stage}-products\n\nprovider:\n  name: aws\n  runtime: nodejs20.x\n  region: ap-northeast-1\n  stage: ${opt:stage, 'dev'}\n  environment:\n    STAGE: ${opt:stage, 'dev'}\n    PRODUCTS_TABLE: ${self:custom.tableName}\n  iam:\n    role:\n      statements:\n        - Effect: Allow\n          Action:\n            - dynamodb:GetItem\n            - dynamodb:PutItem\n            - dynamodb:UpdateItem\n            - dynamodb:DeleteItem\n            - dynamodb:Query\n            - dynamodb:Scan\n            - dynamodb:BatchGetItem\n            - dynamodb:BatchWriteItem\n          Resource:\n            - !GetAtt ProductsTable.Arn\n\nfunctions:\n  api:\n    handler: server.handler\n    events:\n      - httpApi:\n          path: /\n          method: ANY\n      - httpApi:\n          path: /{proxy+}\n          method: ANY\n\nresources:\n  Resources:\n    ProductsTable:\n      Type: AWS::DynamoDB::Table\n      Properties:\n        TableName: ${self:custom.tableName}\n        BillingMode: PAY_PER_REQUEST\n        AttributeDefinitions:\n          - AttributeName: PK\n            AttributeType: S\n          - AttributeName: SK\n            AttributeType: S\n        KeySchema:\n          - AttributeName: PK\n            KeyType: HASH\n          - AttributeName: SK\n            KeyType: RANGE\n",
+    "serviceRawFile": "service: arduino-ecommerce-backend\r\n\r\ncustom:\r\n  tableName: ${self:service}-${self:provider.stage}-products\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs20.x\r\n  region: ap-northeast-1\r\n  stage: ${opt:stage, 'dev'}\r\n  environment:\r\n    STAGE: ${opt:stage, 'dev'}\r\n    PRODUCTS_TABLE: ${self:custom.tableName}\r\n  iam:\r\n    role:\r\n      statements:\r\n        - Effect: Allow\r\n          Action:\r\n            - dynamodb:GetItem\r\n            - dynamodb:PutItem\r\n            - dynamodb:UpdateItem\r\n            - dynamodb:DeleteItem\r\n            - dynamodb:Query\r\n            - dynamodb:Scan\r\n            - dynamodb:BatchGetItem\r\n            - dynamodb:BatchWriteItem\r\n          Resource:\r\n            - !GetAtt ProductsTable.Arn\r\n\r\nfunctions:\r\n  api:\r\n    handler: server.handler\r\n    events:\r\n      - httpApi:\r\n          path: /\r\n          method: ANY\r\n      - httpApi:\r\n          path: /{proxy+}\r\n          method: ANY\r\n\r\nresources:\r\n  Resources:\r\n    ProductsTable:\r\n      Type: AWS::DynamoDB::Table\r\n      Properties:\r\n        TableName: ${self:custom.tableName}\r\n        BillingMode: PAY_PER_REQUEST\r\n        AttributeDefinitions:\r\n          - AttributeName: PK\r\n            AttributeType: S\r\n          - AttributeName: SK\r\n            AttributeType: S\r\n        KeySchema:\r\n          - AttributeName: PK\r\n            KeyType: HASH\r\n          - AttributeName: SK\r\n            KeyType: RANGE\r\n",
     "command": [
       "deploy"
     ],
-    "options": {},
+    "options": {
+      "stage": "dev"
+    },
     "orgId": "8bc814ac-6883-4239-9e18-54616cfd7b29",
     "orgName": "pauljison",
     "userId": "6ndB0VYzN47kg4HWBM",
@@ -1000,7 +1002,7 @@
           "Properties": {
             "Code": {
               "S3Bucket": "serverless-framework-deployments-ap-northeast-1-b148e94f-d5e5",
-              "S3Key": "serverless/arduino-ecommerce-backend/dev/1782351679681-2026-06-25T01:41:19.681Z/arduino-ecommerce-backend.zip"
+              "S3Key": "serverless/arduino-ecommerce-backend/dev/1782893363591-2026-07-01T08:09:23.591Z/arduino-ecommerce-backend.zip"
             },
             "Handler": "server.handler",
             "Runtime": "nodejs20.x",
@@ -1024,14 +1026,14 @@
             "ApiLogGroup"
           ]
         },
-        "ApiLambdaVersionwZLclcTApt6fE5iM18X9oHWArKMHkN6AtlopKxByRU": {
+        "ApiLambdaVersionuiqBh68C7t1ZZSscF6NOJQ9klHwFEDRDqqQjwbiXA": {
           "Type": "AWS::Lambda::Version",
           "DeletionPolicy": "Retain",
           "Properties": {
             "FunctionName": {
               "Ref": "ApiLambdaFunction"
             },
-            "CodeSha256": "A88VCAyk0MSWzGiWFPjPmD4iZVyxtPejObfTkzDpTUs="
+            "CodeSha256": "2hYeTVJUsyHOJZWd+a0OGvoUOiDeUjRbYPzeGPcatn8="
           }
         },
         "HttpApi": {
@@ -1188,7 +1190,7 @@
         "ApiLambdaFunctionQualifiedArn": {
           "Description": "Current Lambda function version",
           "Value": {
-            "Ref": "ApiLambdaVersionwZLclcTApt6fE5iM18X9oHWArKMHkN6AtlopKxByRU"
+            "Ref": "ApiLambdaVersionuiqBh68C7t1ZZSscF6NOJQ9klHwFEDRDqqQjwbiXA"
           },
           "Export": {
             "Name": "sls-arduino-ecommerce-backend-dev-ApiLambdaFunctionQualifiedArn"

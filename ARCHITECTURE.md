@@ -1,6 +1,6 @@
 # Architecture — Arduino Ecommerce Website
 
-> Stable checkpoint snapshot — 2026-06-29
+> Stable checkpoint snapshot — 2026-07-01 (routes verified against backend/server.js and backend/src/routes/productRoutes.js)
 
 ---
 

@@ -137,7 +137,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-ap-northeast-1-b148e94f-d5e5",
-                "S3Key": "serverless/arduino-ecommerce-backend/dev/1782351679681-2026-06-25T01:41:19.681Z/arduino-ecommerce-backend.zip"
+                "S3Key": "serverless/arduino-ecommerce-backend/dev/1782893363591-2026-07-01T08:09:23.591Z/arduino-ecommerce-backend.zip"
               },
               "Handler": "server.handler",
               "Runtime": "nodejs20.x",
@@ -161,14 +161,14 @@
               "ApiLogGroup"
             ]
           },
-          "ApiLambdaVersionwZLclcTApt6fE5iM18X9oHWArKMHkN6AtlopKxByRU": {
+          "ApiLambdaVersionuiqBh68C7t1ZZSscF6NOJQ9klHwFEDRDqqQjwbiXA": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ApiLambdaFunction"
               },
-              "CodeSha256": "A88VCAyk0MSWzGiWFPjPmD4iZVyxtPejObfTkzDpTUs="
+              "CodeSha256": "2hYeTVJUsyHOJZWd+a0OGvoUOiDeUjRbYPzeGPcatn8="
             }
           },
           "HttpApi": {
@@ -322,7 +322,7 @@
           "ApiLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ApiLambdaVersionwZLclcTApt6fE5iM18X9oHWArKMHkN6AtlopKxByRU"
+              "Ref": "ApiLambdaVersionuiqBh68C7t1ZZSscF6NOJQ9klHwFEDRDqqQjwbiXA"
             },
             "Export": {
               "Name": "sls-arduino-ecommerce-backend-dev-ApiLambdaFunctionQualifiedArn"
@@ -397,7 +397,7 @@
         "timeout": 6,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "ApiLambdaVersionwZLclcTApt6fE5iM18X9oHWArKMHkN6AtlopKxByRU"
+        "versionLogicalId": "ApiLambdaVersionuiqBh68C7t1ZZSscF6NOJQ9klHwFEDRDqqQjwbiXA"
       }
     },
     "resources": {
@@ -455,7 +455,7 @@
     "artifact": "E:\\2026 PROJECTS\\Summer\\Projects\\Arduino Ecommerce Website\\backend\\.serverless\\arduino-ecommerce-backend.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/arduino-ecommerce-backend/dev/1782351679681-2026-06-25T01:41:19.681Z",
+    "artifactDirectoryName": "serverless/arduino-ecommerce-backend/dev/1782893363591-2026-07-01T08:09:23.591Z",
     "artifact": "arduino-ecommerce-backend.zip"
   }
 }
