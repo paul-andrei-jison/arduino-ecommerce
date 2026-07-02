@@ -5,6 +5,7 @@ const express = require('express');
 const cors = require('cors');
 const serverless = require('serverless-http');
 const productRouter = require('./src/routes/productRoutes');
+const authRouter = require('./src/routes/authRoutes');
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api', productRouter);
+app.use('/api', authRouter);
 
 // Only listen locally if we are not running in AWS Lambda
 if (process.env.NODE_ENV !== 'production') {
