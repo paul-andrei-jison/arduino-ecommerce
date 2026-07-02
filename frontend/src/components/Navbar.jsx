@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
+import { AuthContext } from '../context/AuthContext';
 
 const navLinks = [
   { to: '/', label: 'Home' },
@@ -9,6 +10,7 @@ const navLinks = [
 
 export default function Navbar() {
   const { cartItems } = useContext(CartContext);
+  const { user, logoutUser } = useContext(AuthContext);
   const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const activeClass = 'text-cyan-400 font-semibold';
@@ -30,6 +32,25 @@ export default function Navbar() {
             Cart{itemCount > 0 ? ` (${itemCount})` : ''}
           </NavLink>
         </li>
+        {user ? (
+          <>
+            <li className="text-gray-300 text-sm">Welcome, {user.name}</li>
+            <li>
+              <button
+                onClick={logoutUser}
+                className="bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-1 rounded transition-colors"
+              >
+                Logout
+              </button>
+            </li>
+          </>
+        ) : (
+          <li>
+            <NavLink to="/login" className={({ isActive }) => (isActive ? activeClass : idleClass)}>
+              Login / Sign Up
+            </NavLink>
+          </li>
+        )}
       </ul>
     </nav>
   );
