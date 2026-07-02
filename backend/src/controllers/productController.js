@@ -1,6 +1,6 @@
 'use strict';
 
-const { getAllProducts, createProduct, updateProduct, deleteProduct } = require('../services/productService');
+const { getAllProducts, getProductById, createProduct, updateProduct, deleteProduct } = require('../services/productService');
 
 async function listProducts(req, res) {
   try {
@@ -12,17 +12,43 @@ async function listProducts(req, res) {
   }
 }
 
+async function getProductHandler(req, res) {
+  try {
+    const { id } = req.params;
+    const product = await getProductById(id);
+    if (!product) return res.status(404).json({ error: 'Product not found' });
+    res.json(product);
+  } catch (err) {
+    console.error('getProductHandler error:', err);
+    res.status(500).json({ error: 'Failed to retrieve product' });
+  }
+}
+
 async function createProductHandler(req, res) {
   try {
     const { name, description, category, price, stock } = req.body;
-    const productId = await createProduct({ name, description, category, price, stock });
+    const uploadedPaths = (req.files ?? []).map(f => `/uploads/${f.filename}`);
+    const primaryIdx = parseInt(req.body.primaryImage ?? '0', 10);
+    const primaryImage = uploadedPaths[primaryIdx] ?? uploadedPaths[0] ?? null;
+
+    const productId = await createProduct({
+      name,
+      description,
+      category,
+      price: parseFloat(price),
+      stock: parseInt(stock, 10),
+      images: uploadedPaths,
+      primaryImage,
+    });
     res.status(201).json({
       id: productId,
       name,
       description,
       category,
-      price,
-      stock,
+      price: parseFloat(price),
+      stock: parseInt(stock, 10),
+      images: uploadedPaths,
+      primaryImage,
     });
   } catch (err) {
     console.error('createProductHandler error:', err);
@@ -33,7 +59,21 @@ async function createProductHandler(req, res) {
 async function updateProductHandler(req, res) {
   try {
     const { id } = req.params;
-    await updateProduct(id, req.body);
+    const uploadedPaths = (req.files ?? []).map(f => `/uploads/${f.filename}`);
+
+    const updateData = { ...req.body };
+    delete updateData.primaryImage;
+
+    if (updateData.price !== undefined) updateData.price = parseFloat(updateData.price);
+    if (updateData.stock !== undefined) updateData.stock = parseInt(updateData.stock, 10);
+
+    if (uploadedPaths.length > 0) {
+      const primaryIdx = parseInt(req.body.primaryImage ?? '0', 10);
+      updateData.images = uploadedPaths;
+      updateData.primaryImage = uploadedPaths[primaryIdx] ?? uploadedPaths[0];
+    }
+
+    await updateProduct(id, updateData);
     res.status(200).json({ message: `Product ${id} updated successfully` });
   } catch (err) {
     console.error('updateProductHandler error:', err);
@@ -52,4 +92,4 @@ async function deleteProductHandler(req, res) {
   }
 }
 
-module.exports = { listProducts, createProductHandler, updateProductHandler, deleteProductHandler };
+module.exports = { listProducts, getProductHandler, createProductHandler, updateProductHandler, deleteProductHandler };
