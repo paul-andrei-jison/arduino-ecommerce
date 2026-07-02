@@ -8,14 +8,15 @@ const {
   updateProductHandler,
   deleteProductHandler,
 } = require('../controllers/productController');
+const upload = require('../middleware/upload');
 
 const router = Router();
 
 router.get('/products', listProducts);
 router.get('/products/:id', getProductHandler);
 
-router.post('/products', createProductHandler);
-router.put('/products/:id', updateProductHandler);
+router.post('/products', upload.array('productImages', 5), createProductHandler);
+router.put('/products/:id', upload.array('productImages', 5), updateProductHandler);
 router.delete('/products/:id', deleteProductHandler);
 
 module.exports = router;

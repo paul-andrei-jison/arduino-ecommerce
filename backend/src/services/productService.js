@@ -37,7 +37,7 @@ async function getProductById(productId) {
 
 async function createProduct(productData) {
   const productId = randomUUID();
-  const { name, description, category, price, stock } = productData;
+  const { name, description, category, price, stock, images, primaryImage } = productData;
 
   const command = new PutCommand({
     TableName: TABLE_NAME,
@@ -49,6 +49,8 @@ async function createProduct(productData) {
       category,
       price,
       stock,
+      images: images ?? [],
+      primaryImage: primaryImage ?? null,
       createdAt: new Date().toISOString(),
     },
   });
