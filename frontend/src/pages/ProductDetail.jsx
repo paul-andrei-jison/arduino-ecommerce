@@ -12,12 +12,14 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [carouselIndex, setCarouselIndex] = useState(0);
 
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
     setError(null);
     setQuantity(1);
+    setCarouselIndex(0);
     fetch(`${import.meta.env.VITE_API_URL ?? ''}/api/products/${id}`, {
       signal: controller.signal,
     })
@@ -29,6 +31,11 @@ export default function ProductDetail() {
       .then((data) => {
         if (!data || typeof data.stock !== 'number') throw new Error('Product not found.');
         setProduct(data);
+        // Start carousel on the primary image
+        if (data.primaryImage && data.images?.length) {
+          const idx = data.images.indexOf(data.primaryImage);
+          setCarouselIndex(idx >= 0 ? idx : 0);
+        }
         setLoading(false);
       })
       .catch((err) => {
@@ -65,6 +72,22 @@ export default function ProductDetail() {
 
   const outOfStock = product.stock === 0;
 
+  // Build the image list: prefer the images array, fall back to primaryImage alone
+  const carouselImages =
+    product.images?.length > 0
+      ? product.images
+      : product.primaryImage
+      ? [product.primaryImage]
+      : [];
+  const hasMultiple = carouselImages.length > 1;
+
+  function prev() {
+    setCarouselIndex(i => (i === 0 ? carouselImages.length - 1 : i - 1));
+  }
+  function next() {
+    setCarouselIndex(i => (i === carouselImages.length - 1 ? 0 : i + 1));
+  }
+
   return (
     <main className="max-w-6xl mx-auto px-4 py-10">
       <Link
@@ -75,14 +98,53 @@ export default function ProductDetail() {
       </Link>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-4">
-        {/* Left — product image or hardware placeholder */}
-        {product.imageUrl ? (
-          <div className="rounded-2xl overflow-hidden border border-gray-200 min-h-80">
+        {/* Left — carousel or placeholder */}
+        {carouselImages.length > 0 ? (
+          <div className="relative rounded-2xl overflow-hidden border border-gray-200 min-h-80 bg-gray-100 select-none">
+            {/* Main image */}
             <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="w-full h-full object-cover"
+              src={carouselImages[carouselIndex]}
+              alt={`${product.name} – image ${carouselIndex + 1} of ${carouselImages.length}`}
+              className="w-full h-full object-cover min-h-80"
             />
+
+            {hasMultiple && (
+              <>
+                {/* Prev arrow */}
+                <button
+                  onClick={prev}
+                  aria-label="Previous image"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/75 text-white text-2xl flex items-center justify-center transition-colors"
+                >
+                  ‹
+                </button>
+                {/* Next arrow */}
+                <button
+                  onClick={next}
+                  aria-label="Next image"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/75 text-white text-2xl flex items-center justify-center transition-colors"
+                >
+                  ›
+                </button>
+                {/* Counter badge */}
+                <span className="absolute top-3 right-3 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full">
+                  {carouselIndex + 1} / {carouselImages.length}
+                </span>
+                {/* Dot indicators */}
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {carouselImages.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCarouselIndex(i)}
+                      aria-label={`Go to image ${i + 1}`}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        i === carouselIndex ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         ) : (
           <div

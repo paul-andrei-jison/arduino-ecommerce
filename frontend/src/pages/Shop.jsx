@@ -11,9 +11,9 @@ function ProductCard({ product, addToCart }) {
   return (
     <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
       <Link to={`/products/${productId}`} className="block group">
-        {product.imageUrl ? (
+        {product.primaryImage ? (
           <img
-            src={product.imageUrl}
+            src={product.primaryImage}
             alt={product.name}
             className="w-full h-36 object-cover"
           />
