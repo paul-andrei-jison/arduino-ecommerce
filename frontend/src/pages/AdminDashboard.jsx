@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const API_BASE = `${import.meta.env.VITE_API_URL ?? ''}/api/products`;
 
@@ -19,6 +19,7 @@ export default function AdminDashboard() {
   const [formSuccess, setFormSuccess] = useState(null);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [primaryImageIndex, setPrimaryImageIndex] = useState(0);
+  const fileInputRef = useRef(null);
 
   async function loadProducts() {
     setLoading(true);
@@ -44,12 +45,16 @@ export default function AdminDashboard() {
   }
 
   function handleFileChange(e) {
-    const incoming = Array.from(e.target.files).slice(0, 5);
-    imagePreviews.forEach(p => URL.revokeObjectURL(p.url));
-    setImagePreviews(
-      incoming.map(file => ({ url: URL.createObjectURL(file), name: file.name, file }))
-    );
-    setPrimaryImageIndex(0);
+    const slots = 5 - imagePreviews.length;
+    if (slots <= 0) return;
+    const toAdd = Array.from(e.target.files).slice(0, slots).map(file => ({
+      url: URL.createObjectURL(file),
+      name: file.name,
+      file,
+    }));
+    // Reset so the same file can be picked again in a subsequent click
+    e.target.value = '';
+    setImagePreviews(prev => [...prev, ...toAdd]);
   }
 
   function handleRemoveImage(idx) {
@@ -163,17 +168,27 @@ export default function AdminDashboard() {
             {/* Binary file upload */}
             <div>
               <label className="block text-sm text-gray-400 mb-1">
-                Product Images{' '}
-                <span className="text-gray-600">(optional · up to 5 · hold Ctrl/⌘ to select multiple)</span>
+                Product Images <span className="text-gray-600">(optional · up to 5)</span>
               </label>
               <input
+                ref={fileInputRef}
                 type="file"
-                multiple
                 accept="image/*"
-                name="productImages"
                 onChange={handleFileChange}
-                className="w-full text-sm text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-cyan-700 file:text-white hover:file:bg-cyan-600 file:cursor-pointer cursor-pointer"
+                className="hidden"
               />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current.click()}
+                disabled={imagePreviews.length >= 5}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-cyan-700 hover:bg-cyan-600 disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white transition-colors"
+              >
+                {imagePreviews.length === 0
+                  ? 'Choose Image'
+                  : imagePreviews.length >= 5
+                  ? 'Max 5 reached'
+                  : 'Add Another Image'}
+              </button>
             </div>
 
             {/* Thumbnail previews — click to set primary, × to remove */}
