@@ -1,16 +1,38 @@
 import { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
 
-const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+const php = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' });
 
 function ProductCard({ product, addToCart }) {
   const outOfStock = product.stock === 0;
+  const productId = product.PK.replace('PRODUCT#', '');
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-      <h2 className="text-lg font-semibold text-gray-800 mb-2">{product.name}</h2>
-      <p className="text-cyan-600 font-bold text-xl mb-4">{usd.format(product.price)}</p>
-      <div className="mt-auto">
+    <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
+      <Link to={`/products/${productId}`} className="block group">
+        {product.imageUrl ? (
+          <img
+            src={product.imageUrl}
+            alt={product.name}
+            className="w-full h-36 object-cover"
+          />
+        ) : (
+          <div className="w-full h-36 bg-gray-900 flex items-center justify-center">
+            <svg aria-hidden="true" className="w-8 h-8 text-cyan-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" />
+            </svg>
+          </div>
+        )}
+        <div className="p-4">
+          <h2 className="text-base font-semibold text-gray-800 mb-1 group-hover:text-cyan-600 transition-colors leading-snug">
+            {product.name}
+          </h2>
+          <p className="text-cyan-600 font-bold text-lg">{php.format(product.price)}</p>
+        </div>
+      </Link>
+      <div className="px-4 pb-4 mt-auto">
         <button
           onClick={() => addToCart(product)}
           disabled={outOfStock}

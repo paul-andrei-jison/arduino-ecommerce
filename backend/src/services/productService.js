@@ -1,7 +1,7 @@
 'use strict';
 
 const { randomUUID } = require('crypto');
-const { ScanCommand, PutCommand, UpdateCommand, DeleteCommand } = require('@aws-sdk/lib-dynamodb');
+const { GetCommand, ScanCommand, PutCommand, UpdateCommand, DeleteCommand } = require('@aws-sdk/lib-dynamodb');
 const { docClient, TABLE_NAME } = require('../utils/db');
 
 // Scans the entire table and filters to items whose PK begins with "PRODUCT#".
@@ -20,6 +20,19 @@ async function getAllProducts() {
 
   const result = await docClient.send(command);
   return result.Items ?? [];
+}
+
+async function getProductById(productId) {
+  const command = new GetCommand({
+    TableName: TABLE_NAME,
+    Key: {
+      PK: `PRODUCT#${productId}`,
+      SK: 'METADATA',
+    },
+  });
+
+  const result = await docClient.send(command);
+  return result.Item ?? null;
 }
 
 async function createProduct(productData) {
@@ -81,4 +94,4 @@ async function deleteProduct(productId) {
   await docClient.send(command);
 }
 
-module.exports = { getAllProducts, createProduct, updateProduct, deleteProduct };
+module.exports = { getAllProducts, getProductById, createProduct, updateProduct, deleteProduct };

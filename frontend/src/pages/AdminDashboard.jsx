@@ -8,6 +8,7 @@ const defaultForm = {
   category: '',
   price: '',
   stock: '',
+  imageUrl: '',
 };
 
 export default function AdminDashboard() {
@@ -87,7 +88,7 @@ export default function AdminDashboard() {
     { label: 'Name', name: 'name', type: 'text', placeholder: 'Arduino Uno' },
     { label: 'Description', name: 'description', type: 'text', placeholder: 'Brief description' },
     { label: 'Category', name: 'category', type: 'text', placeholder: 'Microcontrollers' },
-    { label: 'Price ($)', name: 'price', type: 'number', placeholder: '29.99', step: '0.01', min: '0' },
+    { label: 'Price (₱)', name: 'price', type: 'number', placeholder: '1699', step: '0.01', min: '0' },
     { label: 'Stock', name: 'stock', type: 'number', placeholder: '100', min: '0' },
   ];
 
@@ -129,6 +130,17 @@ export default function AdminDashboard() {
                 />
               </div>
             ))}
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Image URL <span className="text-gray-600">(optional)</span></label>
+              <input
+                type="url"
+                name="imageUrl"
+                value={form.imageUrl}
+                onChange={handleChange}
+                placeholder="https://example.com/product.jpg"
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition"
+              />
+            </div>
             <button
               type="submit"
               className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2 rounded-lg transition-colors mt-2"
@@ -175,7 +187,7 @@ export default function AdminDashboard() {
                     >
                       <td className="py-2 pr-3 text-gray-100 font-medium">{p.name}</td>
                       <td className="py-2 pr-3 text-gray-400">{p.category}</td>
-                      <td className="py-2 pr-3 text-cyan-400">${Number(p.price).toFixed(2)}</td>
+                      <td className="py-2 pr-3 text-cyan-400">₱{Number(p.price).toFixed(2)}</td>
                       <td className="py-2 pr-3 text-gray-400">{p.stock}</td>
                       <td className="py-2">
                         <button

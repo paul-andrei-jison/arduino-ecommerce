@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
 
-const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+const php = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' });
 
 export default function Cart() {
   const { cartItems, updateQuantity, removeFromCart } = useContext(CartContext);
@@ -67,7 +67,7 @@ export default function Cart() {
           <li key={item.PK} className="flex items-center justify-between px-5 py-4 bg-white gap-4">
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-gray-800">{item.name}</p>
-              <p className="text-sm text-gray-500">{usd.format(item.price)} each</p>
+              <p className="text-sm text-gray-500">{php.format(item.price)} each</p>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -87,7 +87,7 @@ export default function Cart() {
               </button>
             </div>
             <div className="flex items-center gap-4">
-              <p className="font-bold text-gray-800">{usd.format(item.price * item.quantity)}</p>
+              <p className="font-bold text-gray-800">{php.format(item.price * item.quantity)}</p>
               <button
                 onClick={() => removeFromCart(item.PK)}
                 className="text-sm text-red-500 hover:text-red-700 transition-colors"
@@ -101,7 +101,7 @@ export default function Cart() {
 
       <div className="flex justify-between items-center mt-6 px-1">
         <span className="text-lg font-semibold text-gray-700">Total</span>
-        <span className="text-2xl font-bold text-gray-900">{usd.format(total)}</span>
+        <span className="text-2xl font-bold text-gray-900">{php.format(total)}</span>
       </div>
     </main>
   );

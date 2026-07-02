@@ -1,6 +1,6 @@
 'use strict';
 
-const { getAllProducts, createProduct, updateProduct, deleteProduct } = require('../services/productService');
+const { getAllProducts, getProductById, createProduct, updateProduct, deleteProduct } = require('../services/productService');
 
 async function listProducts(req, res) {
   try {
@@ -9,6 +9,18 @@ async function listProducts(req, res) {
   } catch (err) {
     console.error('listProducts error:', err);
     res.status(500).json({ error: 'Failed to retrieve products' });
+  }
+}
+
+async function getProductHandler(req, res) {
+  try {
+    const { id } = req.params;
+    const product = await getProductById(id);
+    if (!product) return res.status(404).json({ error: 'Product not found' });
+    res.json(product);
+  } catch (err) {
+    console.error('getProductHandler error:', err);
+    res.status(500).json({ error: 'Failed to retrieve product' });
   }
 }
 
@@ -52,4 +64,4 @@ async function deleteProductHandler(req, res) {
   }
 }
 
-module.exports = { listProducts, createProductHandler, updateProductHandler, deleteProductHandler };
+module.exports = { listProducts, getProductHandler, createProductHandler, updateProductHandler, deleteProductHandler };
